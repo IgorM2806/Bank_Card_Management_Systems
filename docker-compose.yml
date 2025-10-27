@@ -1,0 +1,41 @@
+  version: '3.8'
+  services:
+    web:
+      container_name: BankCardManagementSystems_dev
+      image: myapp:local-build
+      build:
+        context: .
+        dockerfile: Dockerfile
+      ports:
+        - "8080:8080" # маппинг порта для доступа к приложению
+      environment:
+        SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
+        SPRING_DATASOURCE_USERNAME: postgres
+        SPRING_DATASOURCE_PASSWORD: OKLICK
+      depends_on:
+        db:
+          condition: service_started
+      networks:
+        - my_network
+
+    db:
+      container_name: postgres_db
+      image: postgres:18
+      restart: always
+      volumes:
+        - pgdata:/var/lib/postgresql/data
+      environment:
+        POSTGRES_DB: postgres
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: OKLICK
+      ports:
+        - "5432:5432" # доступ к БД снаружи
+      networks:
+        - my_network
+
+  networks:
+    my_network:
+      driver: bridge
+
+  volumes:
+    pgdata:

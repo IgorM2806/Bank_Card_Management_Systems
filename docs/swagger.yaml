@@ -1,0 +1,599 @@
+openapi: '3.0.0'
+info:
+  title: Bank Administration API
+  version: '1.0.0'
+  description: |
+    API for administrative operations related to managing bank cards, users, transfers, and balances.
+
+servers:
+  - url: 'http://localhost:8080'
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ----- Карточки -----
+  "/api/v1/cards/balances/{userId}": # Балансы карточек пользователя
+    get:
+      tags:
+        - Card Balances
+      operationId: getCardsWithBalancesForUser
+      summary: Get all cards with balances for a specific user
+      description: Retrieves detailed information about cards and their balances associated with a particular user.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful response containing list of card balances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CardBalanceDto"
+        '404':
+          description: User not found
+          content:
+            text/plain:
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+
+  /api/v1/cards/block: # Заблокировать карту
+  post:
+    tags:
+      - Card Blocking
+    operationId: blockCard
+    summary: Блокировка карты
+    description: Блокирует карту по её уникальному идентификатору.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              userId:
+                type: integer
+                format: int64
+                description: Идентификатор пользователя, выполняющего операцию блокировки
+              cardId:
+                type: integer
+                format: int64
+                description: Уникальный идентификатор заблокированной карты
+    responses:
+      '200':
+        description: Карта успешно заблокирована
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Успешно заблокировано!
+                code:
+                  type: integer
+                  example: 200
+      '403':
+        description: Доступ запрещён
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: Запрещено выполнение операции
+      '404':
+        description: Пользователь не найден
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: Пользователь не найден
+      '500':
+        description: Внутренняя ошибка сервера
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: Ошибка обработки запроса
+
+  /api/v1/cards/unblock: # Разблокировать карту
+  post:
+    tags:
+      - Card Unblocking
+    operationId: unblockCard
+    summary: Разблокировка карты
+    description: Разблокирует ранее заблокированную карту по её уникальному идентификатору.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              userId:
+                type: integer
+                format: int64
+                description: Идентификатор пользователя, запрашивающего разблокировку
+              cardId:
+                type: integer
+                format: int64
+                description: Уникальный идентификатор карты, подлежащей разблокировке
+    responses:
+      '200':
+        description: Карта успешно разблокирована
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Успешно разблокировано!
+                code:
+                  type: integer
+                  example: 200
+      '403':
+        description: Доступ запрещён
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: Операция запрещена
+      '404':
+        description: Пользователь не найден
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: Пользователь не найден
+      '500':
+        description: Внутренняя ошибка сервера
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: Ошибка обработки запроса
+
+  "/api/v1/cards/change-deposit/{cardId}": # Пополнение баланса карты
+    put:
+      tags:
+        - Balance Operations
+      operationId: depositCardBalance
+      summary: Deposit money into a card's balance
+      description: Increases the balance of a card by the requested amount.
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          description: ID of the card to which funds should be deposited
+          schema:
+            type: integer
+            format: int64
+        - name: amountChange
+          in: query
+          required: true
+          description: Amount to deposit
+          schema:
+            type: number
+            format: decimal
+      responses:
+        '204':
+          description: Balance changed successfully
+        '404':
+          description: Card not found
+          content:
+            text/plain:
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+
+  "/api/v1/cards/withdraw/{cardId}": # Снятие денег с карты
+    put:
+      tags:
+        - Balance Operations
+      operationId: withdrawFromCard
+      summary: Withdraw money from a card's balance
+      description: Decreases the balance of a card by the requested amount.
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          description: ID of the card from which funds should be withdrawn
+          schema:
+            type: integer
+            format: int64
+        - name: amountWithdraw
+          in: query
+          required: true
+          description: Amount to withdraw
+          schema:
+            type: number
+            format: decimal
+      responses:
+        '204':
+          description: Balance changed successfully
+        '404':
+          description: Card not found
+          content:
+            text/plain:
+              schema:
+                type: string
+        '402':
+          description: Insufficient funds
+          content:
+            text/plain:
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+
+  # ----- Управление пользователями -----
+  "/api/v1/users/delete/{userId}": # Удаление пользователя
+    delete:
+      tags:
+        - User Management
+      operationId: deleteUser
+      summary: Delete a user by their ID
+      description: Permanently removes a user from the system.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user to delete
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: User deleted successfully
+        '404':
+          description: User not found
+          content:
+            text/plain:
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+
+  "/api/v1/admin/users/add": # Регистрация нового пользователя
+    post:
+      tags:
+        - User Management
+      operationId: createUser
+      summary: Register a new user
+      description: Registers a new user in the system.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserDTO"
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+        '409':
+          description: User already exists
+          content:
+            text/plain:
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+
+  "/api/v1/admin/users/password/update": # Обновление пароля пользователя
+    post:
+      tags:
+        - User Management
+      operationId: updateUserPasswordHash
+      summary: Update a user's password
+      description: Changes the password for a user.
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: ID of the user whose password needs updating
+          schema:
+            type: integer
+            format: int64
+        - name: password
+          in: query
+          required: true
+          description: New password for the user
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Password updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+        '500':
+          description: Internal error during password update
+      security:
+        - bearerAuth: []
+
+  # ----- Управление картами -----
+  "/api/v1/admin/cards/{userId}": # Добавление карты пользователю
+    post:
+      tags:
+        - Card Management
+      operationId: addCardToUser
+      summary: Add a new card to a user
+      description: Adds a new card to a user's account.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user receiving the new card
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCardDTO"
+      responses:
+        '200':
+          description: Card added successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cards"
+        '409':
+          description: Card number conflict
+          content:
+            text/plain:
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+
+  "/api/v1/cards/delete/{cardId}": # Удаление банковской карты
+    delete:
+      tags:
+        - Card Management
+      operationId: deleteCard
+      summary: Delete a card by its ID
+      description: Removes a card from the system permanently.
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          description: ID of the card to delete
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Card deleted successfully
+        '404':
+          description: Card not found
+          content:
+            text/plain:
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+
+  # ----- Транзакции между картами -----
+  "/api/v1/transferCards/user/{userId}": # Получить карточки пользователя
+    get:
+      tags:
+        - Card Transfers
+      operationId: getUserCards
+      summary: Retrieve all cards owned by a user
+      description: Fetches a list of cards belonging to a specific user.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful response containing list of cards
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Cards"
+        '404':
+          description: User not found
+          content:
+            text/plain:
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+
+  "/api/v1/transferCards/transfer": # Перевод денег между картами
+    post:
+      tags:
+        - Card Transfers
+      operationId: performTransfer
+      summary: Perform a transfer between two cards
+      description: Transfers money from one card to another within the same user account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferData"
+      responses:
+        '200':
+          description: Transfer successful
+        '404':
+          description: One or both cards not found
+          content:
+            text/plain:
+              schema:
+                type: string
+        '402':
+          description: Insufficient funds
+          content:
+            text/plain:
+              schema:
+                type: string
+      security:
+        - bearerAuth: []
+
+components:
+  schemas:
+    CreateCardDTO:
+      type: object
+      properties:
+        card_number:
+          type: string
+          description: Номер карты
+        expiry_date:
+          type: string
+          format: date
+          description: Дата окончания срока действия карты
+        status:
+          type: string
+          enum: ["ACTIVE", "BLOCKED", "EXPIRED", "INACTIVE"]  # Возможные статусы карты
+          description: Статус карты
+        balance:
+          type: number
+          format: decimal
+          minimum: 0  # Баланс не может быть отрицательным
+          description: Текущий баланс на карте
+
+    CardBalanceDto:
+      type: object
+      properties:
+        card_id:
+          type: integer
+          format: int64
+          description: Уникальный идентификатор карты
+        balance:
+          type: number
+          format: decimal
+          minimum: 0  # Баланс не может быть отрицательным
+          description: Текущий баланс на карте
+        currency:
+          type: string
+          pattern: "^[A-Z]{3}$"  # Валюта должна соответствовать формату ISO 4217
+          description: Код валюты баланса
+
+    Cards:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Уникальный идентификатор карты
+        card_number:
+          type: string
+          description: Номер карты
+        expiry_date:
+          type: string
+          format: date
+          description: Срок действия карты
+        status:
+          type: string
+          enum: ["ACTIVE", "BLOCKED", "EXPIRED", "INACTIVE"]  # Возможные статусы карты
+          description: Статус карты (ACTIVE/BLOCKED)
+
+    TransferData:
+      type: object
+      required:
+        - user_id
+        - source_card
+        - target_card
+        - amount
+      properties:
+        user_id:
+          type: integer
+          format: int64
+          description: ID пользователя, инициирующего перевод
+        source_card:
+          type: integer
+          format: int64
+          description: ID отправляющей карты
+        target_card:
+          type: integer
+          format: int64
+          description: ID принимающей карты
+        amount:
+          type: number
+          format: decimal
+          minimum: 0  # Сумма перевода не может быть отрицательной
+          description: Сумма перевода
+
+    CreateUserDTO:
+      type: object
+      required:
+        - first_name
+        - surname
+        - patronymic
+        - role
+        - password_hash
+      properties:
+        first_name:
+          type: string
+          description: Имя пользователя
+        surname:
+          type: string
+          description: Фамилия пользователя
+        patronymic:
+          type: string
+          description: Отчество пользователя
+        role:
+          type: string
+          description: Роль пользователя
+        password_hash:
+          type: string
+          minLength: 8  # Минимальная длина хеша пароля
+          maxLength: 64  # Максимальная длина хеша пароля
+          description: Хешированный пароль пользователя
+
+    Users:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Уникальный идентификатор пользователя
+        first_name:
+          type: string
+          description: Имя пользователя
+        surname:
+          type: string
+          description: Фамилия пользователя
+        patronymic:
+          type: string
+          description: Отчество пользователя
+        role:
+          type: string
+          description: Роль пользователя
+        password_hash:
+          type: string
+          minLength: 8  # Минимальная длина хеша пароля
+          maxLength: 64  # Максимальная длина хеша пароля
+          description: Хешированный пароль пользователя
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
