@@ -1,7 +1,7 @@
 package org.example.controller;
 
 import org.example.dto.CardBalanceDto;
-import org.example.entity.Users;
+import org.example.entity.User;
 import org.example.exception.InsufficientFundsException;
 import org.example.exception.UserNotFoundException;
 import org.example.repository.UserRepository;
@@ -30,7 +30,7 @@ public class UserCardController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<CardBalanceDto>> getCardsWithBalancesForUser(@PathVariable Long userId) {
         System.out.println("Контроллер - getCardsWithBalancesForUser");
-        Users currentUser = userRepository.findById(userId)
+        User currentUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found!"));
         List<CardBalanceDto> result = userCardService.viewBalancesForUser(currentUser);
         return new ResponseEntity<>(result, HttpStatus.OK);

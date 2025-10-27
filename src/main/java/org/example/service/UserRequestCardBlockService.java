@@ -4,15 +4,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.entity.Cards;
 import org.example.entity.RequestBlocking;
-import org.example.entity.Users;
-import org.example.exception.UserNotFoundException;
+import org.example.entity.User;
 import org.example.repository.CardRepository;
 import org.example.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,11 +22,11 @@ public class UserRequestCardBlockService {
 
     @Transactional
     public MessageResponse requestBlockCard(Long userId, Long cardId) throws AccessDeniedException {
-        Optional<Users> userOpt = userRepository.findById(userId);
+        Optional<User> userOpt = userRepository.findById(userId);
         System.out.println("requestBlockCard - userOpt.isPresent: " + userOpt.isPresent());
 
         if (userOpt.isPresent()) {
-            Users user = userOpt.get();
+            User user = userOpt.get();
 
             // Найдем нужную карту напрямую
             Optional<Cards> currentCardOpt = cardRepository.findById(cardId);

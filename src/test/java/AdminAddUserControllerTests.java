@@ -3,7 +3,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.Main;
 import org.example.dto.CreateUserDTO;
 import org.example.entity.RoleEnum;
-import org.example.entity.Users;
+import org.example.entity.User;
 import org.example.exception.DuplicateUserException;
 import org.example.repository.UserRepository;
 import org.example.service.AdminService;
@@ -50,7 +50,7 @@ public class AdminAddUserControllerTests {
 
         var jsonContent = objectMapper.writeValueAsString(userDto);
 
-        Users createdUser = new Users();
+        User createdUser = new User();
         when(adminService.createUser(anyString(), anyString(), anyString(), any(RoleEnum.class),
                 anyString(), anyString()))
                 .thenReturn(createdUser);
@@ -97,10 +97,10 @@ public class AdminAddUserControllerTests {
         Long userId = 1L;
         String newPassword = "newSecurePassword";
 
-        Users mockUpdatedUser = new Users();
+        User mockUpdatedUser = new User();
         mockUpdatedUser.setId(userId); // установим ID обновленного пользователя
 
-        when(adminService.updateUserWithPasswordHash(anyLong(), anyString())).thenReturn(mockUpdatedUser);
+        when(adminService.updateUserPassword(anyLong(), anyString())).thenReturn(mockUpdatedUser);
 
         // Act
         MockHttpServletRequestBuilder request = post("/admin/users/password/update")

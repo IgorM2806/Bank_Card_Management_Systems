@@ -9,7 +9,7 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @Data
-public class Users {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,9 +38,9 @@ public class Users {
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Cards> cards = new HashSet<>();
 
-    public Users() {}
+    public User() {}
 
-    public Users(String name, String surname, String patronymic,  RoleEnum role, String passwordHash,  String phoneNumber) {
+    public User(String name, String surname, String patronymic, RoleEnum role, String passwordHash, String phoneNumber) {
         this.name = name;
         this.surname = surname;
         this.patronymic = patronymic;

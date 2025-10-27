@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.entity.Cards;
 import org.example.entity.RequestBlocking;
-import org.example.entity.Users;
+import org.example.entity.User;
 import org.example.exception.UserNotFoundException;
 import org.example.repository.CardRepository;
 import org.example.repository.UserRepository;
@@ -24,10 +24,10 @@ public class UserUnblockCardService {
 
     @Transactional
     public MessageResponse requestUnBlockCard(Long userId, Long cardId) throws AccessDeniedException {
-        Optional<Users> userOpt = userRepository.findById(userId);
+        Optional<User> userOpt = userRepository.findById(userId);
 
         if (userOpt.isPresent()) { // Используем isPresent() для ясности
-            Users user = userOpt.get();
+            User user = userOpt.get();
             List<Cards> userCards = cardRepository.findAllByOwner(user);
 
             boolean hasAccess = userCards.stream()

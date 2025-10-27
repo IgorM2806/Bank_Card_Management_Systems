@@ -54,7 +54,7 @@ class UserBlockCardControllerTests {
 
         Long userId = 1L;
         Long cardId = 1L;
-        Users mockedUser = new Users();
+        User mockedUser = new User();
         mockedUser.setId(userId);
         Cards mockedCard = new Cards();
         mockedCard.setOwner(mockedUser);
@@ -87,12 +87,14 @@ class UserBlockCardControllerTests {
         Long nonexistentUserId = 999L; // Несуществующий пользователь
         Long validCardId = 3L; // Карта принадлежит кому-то другому
 
-        List<Users> usersInDb = Arrays.asList(
-                new Users("Alice", "Doe", "Doevna", RoleEnum.USER, "temp"),
-                new Users("Bob", "Doe", "Doevich", RoleEnum.USER, "temp")
+        List<User> usersInDb = Arrays.asList(
+                new User("Alice", "Doe",
+                        "Doevna", RoleEnum.USER, "temp", "1234567890"),
+                new User("Bob", "Doe", "Doevich",
+                        RoleEnum.USER, "temp", "1234567890")
         );
 
-        for (Users u : usersInDb) {
+        for (User u : usersInDb) {
             given(userRepository.findById(u.getId())).willReturn(Optional.of(u));
         }
 

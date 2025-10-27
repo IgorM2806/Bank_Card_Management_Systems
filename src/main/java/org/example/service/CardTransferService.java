@@ -3,7 +3,7 @@ package org.example.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.entity.Cards;
-import org.example.entity.Users;
+import org.example.entity.User;
 import org.example.exception.InsufficientFundsException;
 import org.example.exception.UserNotFoundException;
 import org.example.repository.CardRepository;
@@ -28,12 +28,12 @@ public class CardTransferService {
      * Возвращает список карт пользователя.
      */
     public List<Cards> getUserCards(Long userId) {
-        Optional<Users> userOpt = userRepository.findById(userId);
+        Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
             throw new UserNotFoundException("Пользователь не найден");
         }
 
-        Users user = userOpt.get();
+        User user = userOpt.get();
         return cardRepository.findAllByOwner(user);
     }
 

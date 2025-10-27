@@ -1,7 +1,6 @@
 package org.example.controller;
 
 import org.example.entity.Cards;
-import org.example.entity.Users;
 import org.example.service.CardTransferService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

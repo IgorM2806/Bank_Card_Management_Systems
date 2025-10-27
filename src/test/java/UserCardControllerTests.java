@@ -1,7 +1,7 @@
 import org.example.Main;
 import org.example.controller.UserCardController;
 import org.example.dto.CardBalanceDto;
-import org.example.entity.Users;
+import org.example.entity.User;
 import org.example.exception.CardNotFoundException;
 import org.example.exception.InsufficientFundsException;
 import org.example.exception.InvalidOperationException;
@@ -56,7 +56,7 @@ public class UserCardControllerTests {
     @Test
     public void test_getCardsWithBalancesForUser_Success() throws Exception {
         long validUserId = 1L;
-        Users mockCurrentUser = new Users();
+        User mockCurrentUser = new User();
         mockCurrentUser.setId(1L);
         when(userRepository.findById(validUserId)).thenReturn(Optional.of(mockCurrentUser));
 

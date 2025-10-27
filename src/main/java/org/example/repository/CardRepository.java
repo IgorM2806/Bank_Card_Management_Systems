@@ -1,7 +1,7 @@
     package org.example.repository;
 
     import org.example.entity.Cards;
-    import org.example.entity.Users;
+    import org.example.entity.User;
     import org.springframework.data.jpa.repository.JpaRepository;
     import org.springframework.data.jpa.repository.Modifying;
     import org.springframework.data.jpa.repository.Query;
@@ -11,7 +11,7 @@
 
     public interface CardRepository extends JpaRepository<Cards, Long> {
 
-        List<Cards> findAllByOwner(Users owner);
+        List<Cards> findAllByOwner(User owner);
 
         @Modifying
         @Query(value ="""

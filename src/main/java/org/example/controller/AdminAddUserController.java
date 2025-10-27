@@ -2,7 +2,7 @@ package org.example.controller;
 
 import jakarta.validation.Valid;
 import org.example.dto.CreateUserDTO;
-import org.example.entity.Users;
+import org.example.entity.User;
 import org.example.exception.DuplicateUserException;
 import org.example.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +25,16 @@ import java.util.stream.Collectors;
         @PostMapping("/add")
         public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserDTO dto) {
             System.out.println("Контроллер - AdminAddUserController_createUser!");
-            Users createdUser = adminService.createUser(dto.getFirstName(),
+            User createdUser = adminService.createUser(dto.getFirstName(),
                     dto.getSurname(), dto.getPatronymic(), dto.getRole(), dto.getPasswordHash(), dto.getPhoneNumber());
             return ResponseEntity.ok(createdUser);
         }
 
     @PostMapping("/password/update")
-    public Users updateUserPasswordHash(@RequestParam ("userId") Long userId,
-                                        @RequestParam("password")  String password) {
+    public User updateUserPasswordHash(@RequestParam ("userId") Long userId,
+                                       @RequestParam("password")  String password) {
         System.out.println("Пароль успешно обновлен!");
-        return adminService.updateUserWithPasswordHash(userId, password);
+        return adminService.updateUserPassword(userId, password);
     }
 
         @ResponseStatus(HttpStatus.BAD_REQUEST)

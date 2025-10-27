@@ -22,7 +22,7 @@ public class Cards {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
-    private Users owner;
+    private User owner;
 
     @Column (name = "expiration_date",nullable = false)
     private LocalDate expirationDate;
@@ -40,7 +40,7 @@ public class Cards {
 
     public Cards() {}
 
-    public Cards(String cardNumber, LocalDate expirationDate, Users owner, Status status,
+    public Cards(String cardNumber, LocalDate expirationDate, User owner, Status status,
                  BigDecimal balance, RequestBlocking requestBlocking) {
         this.cardNumber = cardNumber;
         this.expirationDate = expirationDate;

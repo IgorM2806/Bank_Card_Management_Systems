@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.CardBalanceDto;
 import org.example.entity.Cards;
-import org.example.entity.Users;
+import org.example.entity.User;
 import org.example.exception.InsufficientFundsException;
 import org.example.repository.CardRepository;
 import org.example.util.MaskCardNumber;
@@ -22,7 +22,7 @@ public class UserCardService {
 
     private final CardRepository cardRepository;
 
-    public List<CardBalanceDto> viewBalancesForUser (Users currentUser) {
+    public List<CardBalanceDto> viewBalancesForUser (User currentUser) {
         List<Cards> cards = cardRepository.findAllByOwner(currentUser);
 
         MaskCardNumber masker = new MaskCardNumber();
