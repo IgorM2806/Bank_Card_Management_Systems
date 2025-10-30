@@ -33,7 +33,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     @Value("${jwt.secretKey}")
     private String secretKey;
 
-
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
     }
@@ -74,8 +73,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized access.");
             return;
         }
-
         chain.doFilter(req, res);
     }
-
 }

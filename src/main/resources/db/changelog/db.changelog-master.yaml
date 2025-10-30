@@ -3,4 +3,4 @@ databaseChangeLog:
       id: dummy-no-op
       author: developer
       changes:
-        - comment: "This migration does nothing since all tables are already created."
+        - comment: "This migration does nothing since all tables are already created!"

@@ -25,12 +25,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
-
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
     private AuthenticationConfiguration authenticationConfiguration;
+
+    public SecurityConfig(UserRepository userRepository, AuthenticationConfiguration authenticationConfiguration) {
+        this.userRepository = userRepository;
+        this.authenticationConfiguration = authenticationConfiguration;
+    }
 
     /**
      * Настраиваем цепочку фильтров безопасности HTTP-запросов.
