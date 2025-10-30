@@ -3,13 +3,16 @@ package org.example.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "cards")
-@Data
+@Getter
+@Setter
 public class Cards {
 
     @Id

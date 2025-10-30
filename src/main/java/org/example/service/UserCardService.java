@@ -17,10 +17,13 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserCardService {
 
     private final CardRepository cardRepository;
+
+    public UserCardService(CardRepository cardRepository) {
+        this.cardRepository = cardRepository;
+    }
 
     public List<CardBalanceDto> viewBalancesForUser (User currentUser) {
         List<Cards> cards = cardRepository.findAllByOwner(currentUser);

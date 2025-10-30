@@ -16,13 +16,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CardTransferService {
 
     private final CardRepository cardRepository;
 
 
     private final UserRepository userRepository;
+
+    public CardTransferService(CardRepository cardRepository, UserRepository userRepository) {
+        this.cardRepository = cardRepository;
+        this.userRepository = userRepository;
+    }
 
     /**
      * Возвращает список карт пользователя.

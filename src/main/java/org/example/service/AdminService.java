@@ -17,13 +17,18 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+
 public class AdminService {
 
     private final UserRepository userRepository;
 
 
     private final CardRepository cardRepository;
+
+    public AdminService(UserRepository userRepository, CardRepository cardRepository) {
+        this.userRepository = userRepository;
+        this.cardRepository = cardRepository;
+    }
 
     @Transactional
     @PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
@@ -66,7 +71,7 @@ public class AdminService {
     }
 
     @Transactional
-    //@PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
     public Cards createCardForUser(Long userId, String cardNumber,
                                    LocalDate expirationDate, Status status, BigDecimal balance) {
         System.out.println("Обращение в сервис createCardForUser!");

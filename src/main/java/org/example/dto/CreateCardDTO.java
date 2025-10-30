@@ -1,12 +1,15 @@
 package org.example.dto;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.example.entity.Status;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 public class CreateCardDTO {
     private String cardNumber;
     private LocalDate expirationDate;

@@ -9,10 +9,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CardDeletionAdminService {
 
     private final CardRepository cardRepository;
+
+    public CardDeletionAdminService(CardRepository cardRepository) {
+        this.cardRepository = cardRepository;
+    }
 
     /**
      * Удаляет карту по её идентификатору.

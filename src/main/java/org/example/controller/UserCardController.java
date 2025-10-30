@@ -20,11 +20,13 @@ import java.util.NoSuchElementException;
 @RequestMapping("/api/v1/cards")
 public class UserCardController {
 
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
     private UserCardService userCardService;
+
+    public UserCardController(UserRepository userRepository, UserCardService userCardService) {
+        this.userRepository = userRepository;
+        this.userCardService = userCardService;
+    }
 
     @GetMapping("/balances/{userId}")
     @PreAuthorize("isAuthenticated()")

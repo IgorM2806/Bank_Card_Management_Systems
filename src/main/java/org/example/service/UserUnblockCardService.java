@@ -16,11 +16,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserUnblockCardService {
     private final CardRepository cardRepository;
 
     private final UserRepository userRepository;
+
+    public UserUnblockCardService(CardRepository cardRepository, UserRepository userRepository) {
+        this.cardRepository = cardRepository;
+        this.userRepository = userRepository;
+    }
 
     @Transactional
     public MessageResponse requestUnBlockCard(Long userId, Long cardId) throws AccessDeniedException {

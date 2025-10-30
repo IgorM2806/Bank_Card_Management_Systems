@@ -14,10 +14,13 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class AdminChangingCardStatus {
 
     private final CardRepository cardRepository;
+
+    public AdminChangingCardStatus(CardRepository cardRepository) {
+        this.cardRepository = cardRepository;
+    }
 
     @Transactional
     @PreAuthorize("isAuthenticated() && hasRole('ADMIN')")

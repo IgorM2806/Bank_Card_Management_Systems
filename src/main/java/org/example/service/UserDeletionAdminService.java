@@ -14,12 +14,16 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserDeletionAdminService {
 
     private final EntityManager em;
 
     private final UserRepository userRepository;
+
+    public UserDeletionAdminService(EntityManager em, UserRepository userRepository) {
+        this.em = em;
+        this.userRepository = userRepository;
+    }
 
 
     /**
@@ -30,7 +34,7 @@ public class UserDeletionAdminService {
      */
 
     @Transactional
-    @PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
+    //@PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
     public void deleteUser(Long userId) {
         Optional<User> userOpt = userRepository.findById(userId);
 

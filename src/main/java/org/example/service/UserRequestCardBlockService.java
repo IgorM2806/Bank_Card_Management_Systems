@@ -14,11 +14,15 @@ import java.nio.file.AccessDeniedException;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserRequestCardBlockService {
     private final CardRepository cardRepository;
 
     private final UserRepository userRepository;
+
+    public UserRequestCardBlockService(CardRepository cardRepository, UserRepository userRepository) {
+        this.cardRepository = cardRepository;
+        this.userRepository = userRepository;
+    }
 
     @Transactional
     public MessageResponse requestBlockCard(Long userId, Long cardId) throws AccessDeniedException {

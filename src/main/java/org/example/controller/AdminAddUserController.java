@@ -19,10 +19,14 @@ import java.util.stream.Collectors;
 @RestController
     @RequestMapping("/admin/users")
     public class AdminAddUserController {
-        @Autowired
+
         private AdminService adminService;
 
-        @PostMapping("/add")
+    public AdminAddUserController(AdminService adminService) {
+        this.adminService = adminService;
+    }
+
+    @PostMapping("/add")
         public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserDTO dto) {
             System.out.println("Контроллер - AdminAddUserController_createUser!");
             User createdUser = adminService.createUser(dto.getFirstName(),

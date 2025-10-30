@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/cards")
 public class AdminAddCardController {
 
-    @Autowired
     private AdminService adminService;
+
+    public AdminAddCardController(AdminService adminService) {
+        this.adminService = adminService;
+    }
 
     @PostMapping("/{userId}")
     public ResponseEntity<?> addCardToUser(@PathVariable Long userId, @RequestBody CreateCardDTO dto) {

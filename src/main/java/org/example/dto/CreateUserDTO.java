@@ -3,9 +3,12 @@ package org.example.dto;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.example.entity.RoleEnum;
 
-@Data
+@Getter
+@Setter
 public class CreateUserDTO {
 
     @NotNull(message = "Имя обязательно для заполнения.")

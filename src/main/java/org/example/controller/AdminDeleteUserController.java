@@ -15,10 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/users")
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class AdminDeleteUserController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final UserDeletionAdminService userDeletionAdminService;
+
+    public AdminDeleteUserController(UserDeletionAdminService userDeletionAdminService) {
+        this.userDeletionAdminService = userDeletionAdminService;
+    }
+
     @DeleteMapping("/delete/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
         try {
