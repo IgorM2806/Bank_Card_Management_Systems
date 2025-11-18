@@ -1,6 +1,6 @@
     package org.example.repository;
 
-    import org.example.entity.Cards;
+    import org.example.entity.Card;
     import org.example.entity.User;
     import org.springframework.data.jpa.repository.JpaRepository;
     import org.springframework.data.jpa.repository.Modifying;
@@ -8,10 +8,11 @@
     import org.springframework.data.repository.query.Param;
 
     import java.util.List;
+    import java.util.Optional;
 
-    public interface CardRepository extends JpaRepository<Cards, Long> {
+    public interface CardRepository extends JpaRepository<Card, Long> {
 
-        List<Cards> findAllByOwner(User owner);
+        List<Card> findAllByOwner(User owner);
 
         @Modifying
         @Query(value ="""
@@ -23,7 +24,8 @@
                 @Param("userId") Long userId
         );
 
-
         boolean existsByCardNumber(String cardNumber);
+
+        Optional<Card> findByCardNumber(String cardNumber);
 
     }

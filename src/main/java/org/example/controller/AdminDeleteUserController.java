@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/admin/v1/users")
 public class AdminDeleteUserController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final UserDeletionAdminService userDeletionAdminService;

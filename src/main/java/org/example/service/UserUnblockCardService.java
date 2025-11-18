@@ -1,14 +1,12 @@
 package org.example.service;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.example.entity.Cards;
+import org.example.entity.Card;
 import org.example.entity.RequestBlocking;
 import org.example.entity.User;
 import org.example.exception.UserNotFoundException;
 import org.example.repository.CardRepository;
 import org.example.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
@@ -32,7 +30,7 @@ public class UserUnblockCardService {
 
         if (userOpt.isPresent()) { // Используем isPresent() для ясности
             User user = userOpt.get();
-            List<Cards> userCards = cardRepository.findAllByOwner(user);
+            List<Card> userCards = cardRepository.findAllByOwner(user);
 
             boolean hasAccess = userCards.stream()
                     .anyMatch(c -> c.getId().equals(cardId));
@@ -40,8 +38,8 @@ public class UserUnblockCardService {
             if (!hasAccess) {
                 throw new AccessDeniedException("Карточка не принадлежит данному пользователю");
             }
-            Optional<Cards> currentCardOpt = cardRepository.findById(cardId);
-            Cards currentCard = currentCardOpt.get();
+            Optional<Card> currentCardOpt = cardRepository.findById(cardId);
+            Card currentCard = currentCardOpt.get();
             if (currentCard.getRequestBlocking() == RequestBlocking.NO) {
                 return new MessageResponse("Карточка Не заблокирована", 400);
             }

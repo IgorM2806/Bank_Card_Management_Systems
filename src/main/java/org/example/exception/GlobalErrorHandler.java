@@ -1,17 +1,33 @@
 package org.example.exception;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.example.util.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+
+import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.util.HashMap;
+import java.util.Map;
+
 
 @ControllerAdvice
 public class GlobalErrorHandler {
@@ -50,7 +66,7 @@ public class GlobalErrorHandler {
     @ExceptionHandler(InsufficientFundsException.class)
     @ResponseBody
     public ErrorResponse handleInsufficientFundsException(InsufficientFundsException ex) {
-        return new ErrorResponse(HttpStatus.PAYMENT_REQUIRED.value(), "Payment Required",
+        return new ErrorResponse(HttpStatus.PAYMENT_REQUIRED.value(), "Payment Required!",
                 ex.getLocalizedMessage());
     }
 
@@ -83,31 +99,69 @@ public class GlobalErrorHandler {
                 ex.getMessage());
     }
 
+    @ExceptionHandler(JwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleJwtException(JwtException ex) {
+        return  new ErrorResponse(HttpStatus.UNAUTHORIZED.value(),
+                "Unauthorized.", ex.getMessage());
+    }
 
-    public class ErrorResponse {
-        private int code;
-        private String message;
-        private String details;
 
-        public ErrorResponse(int code, String message, String details) {
-            this.code = code;
-            this.message = message;
-            this.details = details;
-        }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                        "Invalid request body", ex.getMessage()));
+    }
 
-        // Геттеры и сеттеры...
+    @ExceptionHandler(DuplicateUserException.class)
+    public ResponseEntity<String> handleDuplicateUserException(DuplicateUserException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
 
-        public int getCode() {return code;}
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(value=HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handleInvalidArguments(IllegalArgumentException e) {
+        return new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Invalid arguments",
+                e.getMessage()
+        );
+    }
 
-        public void setCode(int code) {this.code = code;}
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseBody
+    public Map<String, String> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
+    }
 
-        public String getMessage() {return message;}
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        log.warn("Ошибка преобразования аргументов: {}", ex.getMessage());
 
-        public void setMessage(String message) {this.message = message;}
+        return new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Проверьте введенные данные!",
+                ex.getMessage()
+        );
+    }
 
-        public String getDetails() {return details;}
-
-        public void setDetails(String details) {this.details = details;}
+    @ExceptionHandler(CustomBusinessException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleCustomBusinessException(CustomBusinessException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), "");
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
 }

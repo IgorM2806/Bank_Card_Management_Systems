@@ -1,14 +1,12 @@
 package org.example.service;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.example.entity.Cards;
+import org.example.entity.Card;
 import org.example.entity.User;
 import org.example.exception.InsufficientFundsException;
 import org.example.exception.UserNotFoundException;
 import org.example.repository.CardRepository;
 import org.example.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -31,7 +29,7 @@ public class CardTransferService {
     /**
      * Возвращает список карт пользователя.
      */
-    public List<Cards> getUserCards(Long userId) {
+    public List<Card> getUserCards(Long userId) {
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
             throw new UserNotFoundException("Пользователь не найден");
@@ -42,15 +40,16 @@ public class CardTransferService {
     }
 
     @Transactional
-    public void transferAmountBetweenCards(Long fromCardId, Long toCardId, BigDecimal amount) {
+    public void transferAmountBetweenCards(Long fromCardNumber, Long toCardNumber, BigDecimal amount) {
 
-        Optional<Cards> fromCardOpt = cardRepository.findById(fromCardId);
-        Optional<Cards> toCardOpt = cardRepository.findById(toCardId);
+        Optional<Card> fromCardOpt = cardRepository.findByCardNumber(String.valueOf(fromCardNumber));
+        Optional<Card> toCardOpt = cardRepository.findByCardNumber(String.valueOf(toCardNumber));
+
         if (fromCardOpt.isEmpty() || toCardOpt.isEmpty()) {
             throw new IllegalArgumentException("Одна из указанных карт не найдена.");
         }
-        Cards fromCard = fromCardOpt.get();
-        Cards toCard = toCardOpt.get();
+        Card fromCard = fromCardOpt.get();
+        Card toCard = toCardOpt.get();
 
         if (fromCard.getBalance().compareTo(amount) < 0) {
             throw new InsufficientFundsException("Недостаточно средств на исходной карте.");
@@ -65,25 +64,26 @@ public class CardTransferService {
 
     @Transactional
     public void performTransferForUser(Long userId, Long sourceCard, Long targetCard, BigDecimal amount) {
-        List<Cards> userCards = getUserCards(userId);
-
-        if (userCards.size() <= 1){
+        List<Card> userCards = getUserCards(userId);
+        System.out.println("userCards: " + userCards.toString());
+        if (userCards.size() <= 1) {
             throw new IllegalStateException("Перевод возможен только при наличии двух или более карт.");
         }
 
-        boolean isSourceCardValid = false;
-        boolean isTargetCardValid = false;
+        Optional<Card> sourceCardOpt = userCards.stream()
+                .filter(card -> card.getCardNumber().equals(String.valueOf(sourceCard)))
+                .findAny();
 
-        for (Cards card : userCards) {
-            if(card.getId() == sourceCard){
-                isSourceCardValid = true;
-            }
-            if(card.getId() == targetCard){
-                isTargetCardValid = true;
-            }
-        }
-        if (!isSourceCardValid || !isTargetCardValid){
+        Optional<Card> targetCardOpt = userCards.stream()
+                .filter(card -> card.getCardNumber().equals(String.valueOf(targetCard)))
+                .findAny();
+
+        if (sourceCardOpt.isEmpty() || targetCardOpt.isEmpty()) {
             throw new IllegalArgumentException("Указанные карты не принадлежат указанному пользователю.");
+        }
+
+        if (sourceCard.equals(targetCard)) {
+            throw new IllegalArgumentException("Источник и цель перевода не могут совпадать.");
         }
 
         transferAmountBetweenCards(sourceCard, targetCard, amount);

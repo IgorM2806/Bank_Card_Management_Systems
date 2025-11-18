@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/cards")
+@RequestMapping("/api/user/v1/cards")
 public class UserBlockCardController {
 
     private final UserRequestCardBlockService cardBlockService;
@@ -32,7 +32,7 @@ public class UserBlockCardController {
             throws AccessDeniedException {
         Long userId = ((Number) requestBody.get("userId")).longValue();
         Long cardId = ((Number) requestBody.get("cardId")).longValue();
-        System.out.println("blockCard - userId: " + userId + ", cardId: " + cardId);
+
         try {
             MessageResponse response = cardBlockService.requestBlockCard(userId, cardId);
             return ResponseEntity.status(response.getCode()).body(response);

@@ -1,14 +1,12 @@
 package org.example.service;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.example.dto.CardBalanceDto;
-import org.example.entity.Cards;
+import org.example.entity.Card;
 import org.example.entity.User;
 import org.example.exception.InsufficientFundsException;
 import org.example.repository.CardRepository;
 import org.example.util.MaskCardNumber;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,7 +24,7 @@ public class UserCardService {
     }
 
     public List<CardBalanceDto> viewBalancesForUser (User currentUser) {
-        List<Cards> cards = cardRepository.findAllByOwner(currentUser);
+        List<Card> cards = cardRepository.findAllByOwner(currentUser);
 
         MaskCardNumber masker = new MaskCardNumber();
 
@@ -36,18 +34,19 @@ public class UserCardService {
     }
 
     @Transactional
-    public void depositCardBalance(Long cardId, BigDecimal amountDeposit) {
-        Cards card = cardRepository.findById(cardId)
+    public BigDecimal depositCardBalance(Long cardId, BigDecimal amountDeposit) {
+        Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new NoSuchElementException("Карточка с указанным ID не найдена."));
 
         BigDecimal updatedBalance = card.getBalance().add(amountDeposit);
         card.setBalance(updatedBalance);
         cardRepository.save(card);
+        return updatedBalance;
     }
 
     @Transactional
-    public void withdrawCardBalance(Long cardId, BigDecimal amountWithdraw) throws InsufficientFundsException {
-        Cards card = cardRepository.findById(cardId)
+    public BigDecimal withdrawCardBalance(Long cardId, BigDecimal amountWithdraw) throws InsufficientFundsException {
+        Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new NoSuchElementException("Карточка с указанным ID не найдена."));
 
         if (amountWithdraw.compareTo(BigDecimal.ZERO) > 0 &&
@@ -59,5 +58,6 @@ public class UserCardService {
         BigDecimal updatedBalance = card.getBalance().subtract(amountWithdraw);
         card.setBalance(updatedBalance);
         cardRepository.save(card);
+        return updatedBalance;
     }
 }

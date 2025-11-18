@@ -2,7 +2,6 @@ package org.example.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +12,7 @@ import java.time.LocalDate;
 @Table(name = "cards")
 @Getter
 @Setter
-public class Cards {
+public class Card {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,10 +40,10 @@ public class Cards {
     @Column(nullable = false)
     private RequestBlocking requestBlocking;
 
-    public Cards() {}
+    public Card() {}
 
-    public Cards(String cardNumber, LocalDate expirationDate, User owner, Status status,
-                 BigDecimal balance, RequestBlocking requestBlocking) {
+    public Card(String cardNumber, LocalDate expirationDate, User owner, Status status,
+                BigDecimal balance, RequestBlocking requestBlocking) {
         this.cardNumber = cardNumber;
         this.expirationDate = expirationDate;
         this.owner = owner;
@@ -53,7 +52,7 @@ public class Cards {
         this.requestBlocking = requestBlocking;
     }
 
-    public Cards(Long id) {
+    public Card(Long id) {
         this.id = id;
     }
 
@@ -63,8 +62,10 @@ public class Cards {
                 "id=" + id +
                 ", cardNumber='" + cardNumber + '\'' +
                 ", expirationDate=" + expirationDate +
+                ", owner=" + owner +
                 ", status=" + status +
                 ", balance=" + balance +
+                ", requestBlocking=" + requestBlocking +
                 '}';
     }
 }

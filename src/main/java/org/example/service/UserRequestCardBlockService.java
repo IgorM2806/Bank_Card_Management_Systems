@@ -1,13 +1,11 @@
 package org.example.service;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.example.entity.Cards;
+import org.example.entity.Card;
 import org.example.entity.RequestBlocking;
 import org.example.entity.User;
 import org.example.repository.CardRepository;
 import org.example.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
@@ -33,13 +31,13 @@ public class UserRequestCardBlockService {
             User user = userOpt.get();
 
             // Найдем нужную карту напрямую
-            Optional<Cards> currentCardOpt = cardRepository.findById(cardId);
+            Optional<Card> currentCardOpt = cardRepository.findById(cardId);
 
             if (currentCardOpt.isEmpty()) {
                 return new MessageResponse("Карточка не найдена!", 404);
             }
 
-            Cards currentCard = currentCardOpt.get();
+            Card currentCard = currentCardOpt.get();
 
             // Проверяем, совпадает ли владелец карты с указанным пользователем
             if (!currentCard.getOwner().getId().equals(userId)) {
@@ -47,18 +45,19 @@ public class UserRequestCardBlockService {
             }
 
             if (currentCard.getRequestBlocking() == RequestBlocking.YES) {
-                return new MessageResponse("Карточка уже заблокирована!", 400);
+                return new MessageResponse("Запрос на блокировку уже отправлен для этой карты!", 400);
             }
-
             // Блокируем карту
             int updatedRows = cardRepository.updateRequestBlocking("YES", cardId, userId);
             if (updatedRows != 1) {
                 throw new RuntimeException("Не удалось отправить запрос на блокировку.");
             }
 
-            return new MessageResponse("Карточка успешно заблокирована", 200);
+            return new MessageResponse("Запрос на блокировку успешно отправлен!", 200);
         } else {
             return new MessageResponse("Пользователь не найден!", 404);
         }
     }
+
+
 }

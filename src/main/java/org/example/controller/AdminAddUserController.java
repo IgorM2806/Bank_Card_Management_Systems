@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-    @RequestMapping("/admin/users")
+    @RequestMapping("/admin/v1/users")
     public class AdminAddUserController {
 
         private AdminService adminService;
@@ -29,9 +29,10 @@ import java.util.stream.Collectors;
     @PostMapping("/add")
         public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserDTO dto) {
             System.out.println("Контроллер - AdminAddUserController_createUser!");
-            User createdUser = adminService.createUser(dto.getFirstName(),
-                    dto.getSurname(), dto.getPatronymic(), dto.getRole(), dto.getPasswordHash(), dto.getPhoneNumber());
-            return ResponseEntity.ok(createdUser);
+
+                User createdUser = adminService.createUser(dto.getFirstName(),
+                        dto.getSurname(), dto.getPatronymic(), dto.getRole(), dto.getPasswordHash(), dto.getPhoneNumber());
+                return ResponseEntity.ok(createdUser);
         }
 
     @PostMapping("/password/update")

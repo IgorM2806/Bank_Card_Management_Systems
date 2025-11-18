@@ -2,6 +2,7 @@ package org.example.controller;
 
 import org.example.dto.CardBalanceDto;
 import org.example.entity.User;
+import org.example.exception.CustomBusinessException;
 import org.example.exception.InsufficientFundsException;
 import org.example.exception.UserNotFoundException;
 import org.example.repository.UserRepository;
@@ -13,11 +14,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/v1/cards")
+@RequestMapping("/api/user/v1/cards")
 public class UserCardController {
 
     private UserRepository userRepository;
@@ -40,26 +43,36 @@ public class UserCardController {
 
     @PutMapping("/change-deposit/{cardId}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Object> depositCardBalance (@PathVariable Long cardId, @RequestParam BigDecimal amountChange) {
-        System.out.println("Контроллер: changeCardBalance!");
-
-        userCardService.depositCardBalance(cardId, amountChange);
-        return ResponseEntity.noContent().build();
-
+    public ResponseEntity<Map<String, String>> depositCardBalance
+            (@PathVariable Long cardId, @RequestParam BigDecimal amountChange) {
+        BigDecimal newBalance = userCardService.depositCardBalance(cardId, amountChange);
+        if (newBalance == null) {
+            throw new CustomBusinessException("Проверьте введенные данные!");
+        }
+        Map<String, String> result = new HashMap<>();
+        result.put("message", "Пополнение выполнено успешно!");
+        result.put("balance", newBalance.toString());
+        return ResponseEntity.ok(result);
     }
 
     @PutMapping("/withdraw/{cardId}")
     @PreAuthorize(("isAuthenticated()"))
-    public ResponseEntity<Object> withdrawBalance(@PathVariable Long cardId, @RequestParam BigDecimal amountWithdraw)
+    public ResponseEntity<Map<String, String>> withdrawBalance(@PathVariable Long cardId, @RequestParam BigDecimal amountWithdraw)
             throws InsufficientFundsException {
         try {
-            userCardService.withdrawCardBalance(cardId, amountWithdraw);
-            return ResponseEntity.noContent().build();
+            BigDecimal newBalance = userCardService.withdrawCardBalance(cardId, amountWithdraw);
+            Map<String, String> result = new HashMap<>();
+            result.put("message", "Списание выполнено успешно!");
+            result.put("balance", newBalance.toString());
+            return ResponseEntity.ok(result);
         }catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
+            Map<String, String> errorResult = new HashMap<>();
+            errorResult.put("message", "Card not found!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResult);
         }catch (InsufficientFundsException e) {
-            return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(e.getMessage());
+            Map<String, String> resultError = new HashMap<>();
+            resultError.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(resultError);
         }
     }
-
 }
