@@ -47,7 +47,7 @@ public class AdminService {
 
     // Метод для обновления пароля отдельного пользователя (если потребуется)
     @Transactional
-    //@PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
     public User updateUserPassword(Long userId, String newPlainPassword) {
         System.out.println("Обновление пароля пользователя");
         Optional<User> existingUserOptional = userRepository.findById(userId);

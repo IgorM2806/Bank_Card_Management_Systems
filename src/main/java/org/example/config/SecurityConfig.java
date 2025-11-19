@@ -5,6 +5,7 @@ package org.example.config;
     import org.example.filter.JwtAuthorizationFilter;
     import org.example.repository.UserRepository;
     import org.example.service.CustomUserDetailsService;
+    import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.context.annotation.Bean;
     import org.springframework.context.annotation.Configuration;
     import org.springframework.http.HttpMethod;
@@ -27,7 +28,7 @@ package org.example.config;
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
-
+    @Autowired
     private final UserRepository userRepository;
     private final AuthenticationConfiguration authenticationConfiguration;
 
@@ -89,6 +90,4 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
-
-
 }

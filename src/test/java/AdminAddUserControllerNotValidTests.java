@@ -68,7 +68,7 @@ public class AdminAddUserControllerNotValidTests {
         UserDetailsImpl userDetails = new UserDetailsImpl(existingUser);
         String  token = generateJwtToken(userDetails);
 
-        mockMvc.perform(post("/admin/v1/users/add")
+        mockMvc.perform(post("/api/admin/v1/users/add")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .content(objectMapper.writeValueAsString(createUserDTO))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -92,7 +92,7 @@ public class AdminAddUserControllerNotValidTests {
                     "Ivanovich", RoleEnum.ROLE_ADMIN, "admin123", phoneNumber);
 
             String  token = "noValidToken";
-            MockHttpServletResponse response = mockMvc.perform(post("/admin/v1/users/add")
+            MockHttpServletResponse response = mockMvc.perform(post("/api/admin/v1/users/add")
                             .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                             .content(objectMapper.writeValueAsString(createUserDTO))
                             .contentType(MediaType.APPLICATION_JSON))
@@ -119,7 +119,7 @@ public class AdminAddUserControllerNotValidTests {
 
             String  token = generateJwtToken(userDetails);
 
-            mockMvc.perform(post("/admin/v1/users/add")
+            mockMvc.perform(post("/api/admin/v1/users/add")
                             .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                             .content(objectMapper.writeValueAsString(createUserDTO))
                             .contentType(MediaType.APPLICATION_JSON))

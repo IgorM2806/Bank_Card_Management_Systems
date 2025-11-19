@@ -61,14 +61,4 @@ import java.util.stream.Collectors;
             response.put("exception", ex.getClass().getSimpleName());
             return response;
         }
-
-        // Универсальный обработчик для всех остальных исключений
-        @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-        @ExceptionHandler(Exception.class)
-        public Map<String, Object> handleAllOtherExceptions(Exception ex) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", ex.getMessage());
-            response.put("exception", ex.getClass().getSimpleName());
-            return response;
-        }
 }

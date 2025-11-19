@@ -25,7 +25,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -86,11 +85,10 @@ public class AdminAddUserControllerValidTests {
 
         String token = generateJwtToken(userDetails);
 
-        mockMvc.perform(post("/admin/v1/users/add")
+        mockMvc.perform(post("/api/admin/v1/users/add")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .content(objectMapper.writeValueAsString(createUserDTO))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.name").value(createUserDTO.getFirstName()))

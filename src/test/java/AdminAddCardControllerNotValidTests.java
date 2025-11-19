@@ -64,7 +64,7 @@ public class AdminAddCardControllerNotValidTests {
 
         String jsonContent = objectMapper.writeValueAsString(createCardDTO);
 
-        mockMvc.perform(post("/admin/v1/addCards/{userId}", existingUser.getId())
+        mockMvc.perform(post("/api/admin/v1/addCards/{userId}", existingUser.getId())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                                 .content(jsonContent)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -90,7 +90,7 @@ public class AdminAddCardControllerNotValidTests {
         String  token = generateJwtToken(userDetails);
         String jsonContent = objectMapper.writeValueAsString(createCardDTO);
 
-        mockMvc.perform(post("/admin/v1/addCards/{userId}", existingUser.getId())
+        mockMvc.perform(post("/api/admin/v1/addCards/{userId}", existingUser.getId())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .content(jsonContent)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -114,14 +114,14 @@ public class AdminAddCardControllerNotValidTests {
                 LocalDate.now().plusYears(1), Status.ACTIVE, BigDecimal.valueOf(1000.00));
 
         UserDetailsImpl userDetails = new UserDetailsImpl(existingUser);
-        String  token = generateJwtToken(userDetails);
+        String  token = "notValidToken";
         String jsonContent = objectMapper.writeValueAsString(createCardDTO);
 
-        mockMvc.perform(post("/admin/v1/addCards/{userId}", existingUser.getId())
+        mockMvc.perform(post("/api/admin/v1/addCards/{userId}", existingUser.getId())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .content(jsonContent)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
 
     }
 

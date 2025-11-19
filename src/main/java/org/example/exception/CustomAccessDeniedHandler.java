@@ -11,26 +11,35 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
-    private final ObjectMapper objectMapper =  new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException, ServletException {
+    public void handle(HttpServletRequest request, HttpServletResponse response,
+                       AccessDeniedException exception) throws ServletException {
+        // Создаем объект тела ответа
         Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", System.currentTimeMillis()); // Можно добавить timestamp
         body.put("status", HttpStatus.FORBIDDEN.value());
         body.put("error", "Forbidden");
         body.put("message", "У вас недостаточно прав для доступа к данному ресурсу.");
-        body.put("path", request.getRequestURL().toString());
+        body.put("path", request.getRequestURI()); // Используем RequestURI вместо всего пути (для упрощения)
 
+        // Устанавливаем необходимые заголовки и контент
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        response.getOutputStream().write(objectMapper.writeValueAsBytes(body));
+
+        try {
+            // Отправляем тело ответа в поток вывода
+            response.getWriter().write(objectMapper.writeValueAsString(body));
+        } catch (IOException e) {
+            throw new ServletException(e);
+        }
     }
 }
