@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 
 @RestController
-@RequestMapping("/admin/v1/addCards")
+@RequestMapping("/api/admin/v1/addCards")
 public class AdminAddCardController {
 
     private AdminService adminService;

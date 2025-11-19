@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-    @RequestMapping("/admin/v1/users")
+    @RequestMapping("/api/admin/v1/users")
     public class AdminAddUserController {
 
         private AdminService adminService;
