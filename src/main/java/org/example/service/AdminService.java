@@ -17,7 +17,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
-
 public class AdminService {
     BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
     private final UserRepository userRepository;
@@ -49,7 +48,6 @@ public class AdminService {
     @Transactional
     @PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
     public User updateUserPassword(Long userId, String newPlainPassword) {
-        System.out.println("Обновление пароля пользователя");
         Optional<User> existingUserOptional = userRepository.findById(userId);
         if (!existingUserOptional.isPresent()) {
             throw new RuntimeException("Пользователь с указанным идентификатором не найден");
