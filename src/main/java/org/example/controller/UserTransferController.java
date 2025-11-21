@@ -30,10 +30,6 @@ public class UserTransferController {
     @PostMapping("/transfer")
     @PreAuthorize("isAuthenticated()")
     public void transferMoneyBetweenCards(@Valid @RequestBody TransferData transferData) {
-        System.out.println("transferMoneyBetweenCards: " + transferData.getUserId() + " / "
-                + transferData.getSourceCard() + " / "
-                + transferData.getTargetCard() + " / "
-                + transferData.getAmount());
         cardTransferService.performTransferForUser(transferData.getUserId(),
                 transferData.getSourceCard(), transferData.getTargetCard(), transferData.getAmount());
     }

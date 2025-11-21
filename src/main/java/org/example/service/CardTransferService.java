@@ -45,6 +45,10 @@ public class CardTransferService {
         Optional<Card> fromCardOpt = cardRepository.findByCardNumber(String.valueOf(fromCardNumber));
         Optional<Card> toCardOpt = cardRepository.findByCardNumber(String.valueOf(toCardNumber));
 
+        if (fromCardNumber.equals(toCardNumber)) {
+            throw new IllegalArgumentException("Источник и цель перевода не могут совпадать.");
+        }
+
         if (fromCardOpt.isEmpty() || toCardOpt.isEmpty()) {
             throw new IllegalArgumentException("Одна из указанных карт не найдена.");
         }

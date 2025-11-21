@@ -26,9 +26,8 @@ public class CardDeletionAdminService {
     @Transactional
     @PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
     public void deleteCard(Long cardId) {
-        System.out.println("Сервис - CardDeletionAdminService!");
         if (!cardRepository.existsById(cardId)) {
-            throw new CardNotFoundException("Карта с указанным ID не найдена");
+            throw new CardNotFoundException("Карта с указанным ID не найдена!");
         }
         cardRepository.deleteById(cardId);
     }
