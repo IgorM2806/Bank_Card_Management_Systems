@@ -34,19 +34,16 @@ public class UserDeletionAdminService {
      */
 
     @Transactional
-    //@PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
     public void deleteUser(Long userId) {
         Optional<User> userOpt = userRepository.findById(userId);
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            System.out.println("Пользователь найден: " + user.toString());
             em.lock(user, LockModeType.PESSIMISTIC_READ);
             userRepository.delete(user);
         } else {
-            System.out.println("Пользователь с указанным ID не найден.");
-            throw new UserNotFoundException("Пользователь с указанным ID не найден");
+            throw new UserNotFoundException("The user with the specified ID was not found!");
         }
     }
-
 }

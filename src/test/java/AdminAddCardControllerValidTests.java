@@ -42,7 +42,7 @@ class AdminAddCardControllerValidTests {
 
     @Test
     void testAddCardToUser_Success() throws Exception {
-        User user = new User("Ivan", "Ivanov", "Ivanovich", RoleEnum.ROLE_USERS,
+        User user = new User("Ivan", "Ivanov", "Ivanovich", RoleEnum.ROLE_USER,
                 "password", "1234567891");
         CreateCardDTO requestDto = new CreateCardDTO(CARD_NUMBER, EXPIRATION_DATE, STATUS, BALANCE);
 

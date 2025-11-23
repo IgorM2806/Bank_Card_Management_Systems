@@ -47,7 +47,7 @@ public class AdminServiceTests {
         when(userRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
 
         User savedUser = new User("John", "Doe", "Ivanovich",
-                RoleEnum.ROLE_USERS, "hashed_password", phoneNumber);
+                RoleEnum.ROLE_USER, "hashed_password", phoneNumber);
         when(userRepository.save(any())).thenReturn(savedUser);
 
         // Выполняем операцию создания пользователя
@@ -55,7 +55,7 @@ public class AdminServiceTests {
                 "John",
                 "Doe",
                 "Ivanovich",
-                RoleEnum.ROLE_USERS,
+                RoleEnum.ROLE_USER,
                 "password",
                 phoneNumber
         );

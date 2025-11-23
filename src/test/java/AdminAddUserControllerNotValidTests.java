@@ -108,7 +108,7 @@ public class AdminAddUserControllerNotValidTests {
             existingUser.setName("John");
             existingUser.setSurname("Doe");
             existingUser.setPatronymic("Johnovich");
-            existingUser.setRole(RoleEnum.ROLE_USERS);
+            existingUser.setRole(RoleEnum.ROLE_USER);
             existingUser.setPasswordHash("encodedPassword");
             existingUser.setPhoneNumber(phoneNumber);
 

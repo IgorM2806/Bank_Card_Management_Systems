@@ -1,11 +1,14 @@
 package org.example.controller;
 
+import jakarta.validation.Valid;
+import org.example.dto.CardBlockResponseDto;
 import org.example.exception.UserNotFoundException;
 import org.example.service.MessageResponse;
 import org.example.service.UserRequestCardBlockService;
 import org.example.service.UserUnblockCardService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
@@ -20,7 +23,8 @@ public class UserBlockCardController {
 
     private final UserUnblockCardService unblockCardService;
 
-    public UserBlockCardController(UserRequestCardBlockService cardBlockService,  UserUnblockCardService unblockCardService) {
+    public UserBlockCardController(UserRequestCardBlockService cardBlockService,
+                                   UserUnblockCardService unblockCardService) {
         this.cardBlockService = cardBlockService;
         this.unblockCardService = unblockCardService;
     }
@@ -28,13 +32,12 @@ public class UserBlockCardController {
 
     @RequestMapping("/block")
     @PostMapping
-    public ResponseEntity<MessageResponse> blockCard(@RequestBody Map<String, Object> requestBody)
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<MessageResponse> blockCard(@Valid @RequestBody CardBlockResponseDto cardBlockResponseDto)
             throws AccessDeniedException {
-        Long userId = ((Number) requestBody.get("userId")).longValue();
-        Long cardId = ((Number) requestBody.get("cardId")).longValue();
-
         try {
-            MessageResponse response = cardBlockService.requestBlockCard(userId, cardId);
+            MessageResponse response = cardBlockService.requestBlockCard(cardBlockResponseDto.getUserId(),
+                    cardBlockResponseDto.getCardId());
             return ResponseEntity.status(response.getCode()).body(response);
         }catch (UserNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(
@@ -42,12 +45,13 @@ public class UserBlockCardController {
         }
     }
 
-    @PostMapping("/unblock")
-    public ResponseEntity<MessageResponse> unBlockCard(@RequestBody Map<String, Object> requestBody) {
-        Long userId = ((Number) requestBody.get("userId")).longValue();
-        Long cardId = ((Number) requestBody.get("cardId")).longValue();
+    @RequestMapping("/unblock")
+    @PostMapping
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<MessageResponse> unBlockCard(@Valid @RequestBody CardBlockResponseDto cardBlockResponseDto) {
         try {
-            MessageResponse response = unblockCardService.requestUnBlockCard(userId, cardId);
+            MessageResponse response = unblockCardService.requestUnBlockCard(cardBlockResponseDto.getUserId(),
+                    cardBlockResponseDto.getCardId());
             return ResponseEntity.status(response.getCode()).body(response);
         } catch (AccessDeniedException | UserNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(ex.getMessage(), 403));

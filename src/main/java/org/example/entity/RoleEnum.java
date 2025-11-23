@@ -4,5 +4,5 @@ import aj.org.objectweb.asm.commons.Remapper;
 
 public enum RoleEnum {
     ROLE_ADMIN,
-    ROLE_USERS
+    ROLE_USER
 }

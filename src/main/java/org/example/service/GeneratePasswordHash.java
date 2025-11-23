@@ -12,6 +12,6 @@ public class GeneratePasswordHash {
 //testpass - user='999'
 //temp - user='8'
 //user123 - user='1'
-//admin123 - user='6'
-//admin123456 - user='7'
+//admin123 - admin='6'
+//admin123456 - admin='7'
 //temp - user='12'

@@ -109,7 +109,7 @@ public class UserBlockCardControllerTests {
         String token = prepareUserAndGetJWTToken(1L);
         Card existingCard = new Card();
         User existingUser = new User("User", "User", "User",
-                RoleEnum.ROLE_USERS, "encodedPassword", "1234567890");
+                RoleEnum.ROLE_USER, "encodedPassword", "1234567890");
         existingUser.setId(1L);
 
         existingCard.setId(1L);
@@ -179,7 +179,7 @@ public class UserBlockCardControllerTests {
         String token = prepareUserAndGetJWTToken(1L);
         Card existingCard = new Card();
         User existingUser = new User("User", "User", "User",
-                RoleEnum.ROLE_USERS, "encodedPassword", "1234567890");
+                RoleEnum.ROLE_USER, "encodedPassword", "1234567890");
         existingUser.setId(1L);
 
         existingCard.setId(1L);
@@ -213,7 +213,7 @@ public class UserBlockCardControllerTests {
         existingUser.setName("User");
         existingUser.setSurname("User");
         existingUser.setPatronymic("User");
-        existingUser.setRole(RoleEnum.ROLE_USERS);
+        existingUser.setRole(RoleEnum.ROLE_USER);
         existingUser.setPasswordHash("encodedPassword");
         existingUser.setPhoneNumber("1234567890");
 
