@@ -25,11 +25,8 @@ public class UserRequestCardBlockService {
     @Transactional
     public MessageResponse requestBlockCard(Long userId, Long cardId) throws AccessDeniedException {
         Optional<User> userOpt = userRepository.findById(userId);
-        System.out.println("requestBlockCard - userOpt.isPresent: " + userOpt.isPresent());
 
         if (userOpt.isPresent()) {
-            User user = userOpt.get();
-
             // Найдем нужную карту напрямую
             Optional<Card> currentCardOpt = cardRepository.findById(cardId);
 
@@ -53,11 +50,9 @@ public class UserRequestCardBlockService {
                 throw new RuntimeException("Не удалось отправить запрос на блокировку.");
             }
 
-            return new MessageResponse("Запрос на блокировку успешно отправлен!", 200);
+            return new MessageResponse("Successfully requested to block the card.", 200);
         } else {
-            return new MessageResponse("Пользователь не найден!", 404);
+            return new MessageResponse("The user has not been found!", 404);
         }
     }
-
-
 }
