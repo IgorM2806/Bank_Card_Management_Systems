@@ -102,11 +102,11 @@
 
 ## Детализация покрытия по пакетам:
 - **org.example.service: инструкции — 58%, ветви — 38%.**
-- **org.example.exception: инструкции — 44%, нет данных о ветвях.**
+- **org.example.exception: инструкции — 44%.**
 - **org.example.controller: инструкции — 80%, ветви — 87%.**
 - **org.example.entity: инструкции — 75%, ветви — 16%.**
-- **org.example.dto: инструкции — 69%, нет данных о ветвях.**
-- **org.example.config: инструкции — 88%, нет данных о ветвях.**
+- **org.example.dto: инструкции — 69%.**
+- **org.example.config: инструкции — 88%.**
 - **org.example.util: инструкции — 88%, ветви — 50%.**
 - **org.example.filter: инструкции — 100%, ветви — 75%.**
 
