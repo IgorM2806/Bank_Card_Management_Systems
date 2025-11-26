@@ -9,6 +9,7 @@ public class GeneratePasswordHash {
         System.out.println(hash);
     }
 }
+// Используется для заполнения тестовой таблицы
 //testpass - user='999'
 //temp - user='8'
 //user123 - user='1'

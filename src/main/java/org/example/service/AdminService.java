@@ -1,5 +1,8 @@
 package org.example.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import org.example.entity.*;
 import org.example.exception.DuplicateCardNumberException;
@@ -19,21 +22,26 @@ import java.util.Optional;
 @Service
 public class AdminService {
     BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
+    private final UserDaoImpl userDaoImpl;
 
-    public AdminService(UserRepository userRepository, CardRepository cardRepository) {
+    public AdminService(UserRepository userRepository, CardRepository cardRepository,  UserDaoImpl userDaoImpl) {
         this.userRepository = userRepository;
         this.cardRepository = cardRepository;
+        this.userDaoImpl = userDaoImpl;
     }
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Transactional
     @PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
     public User createUser(String name, String surname, String patronymic, RoleEnum role,
                            String plainPassword, String phoneNumber) {
-        // Проверяем наличие дубликатов по телефону
-        Optional<User> existingUsers = userRepository.findByPhoneNumber(phoneNumber);
-        if (!existingUsers.isEmpty()) {
+
+        if (userDaoImpl.checkIfUserExistsByPhoneNumber(phoneNumber)) {
             throw new DuplicateUserException("Пользователь с таким номером телефона уже существует!");
         }
 
@@ -48,7 +56,7 @@ public class AdminService {
     @Transactional
     @PreAuthorize("isAuthenticated() && hasRole('ADMIN')")
     public User updateUserPassword(Long userId, String newPlainPassword) {
-        Optional<User> existingUserOptional = userRepository.findById(userId);
+        Optional<User> existingUserOptional = userDaoImpl.findUserById(userId);
         if (!existingUserOptional.isPresent()) {
             throw new RuntimeException("Пользователь с указанным идентификатором не найден");
         }
@@ -69,7 +77,7 @@ public class AdminService {
     public Card createCardForUser(Long userId, String cardNumber,
                                   LocalDate expirationDate, Status status, BigDecimal balance) {
         System.out.println("Обращение в сервис createCardForUser!");
-        Optional<User> usersOptional = userRepository.findById(userId);
+        Optional<User> usersOptional = userDaoImpl.findUserById(userId);
         if (!usersOptional.isPresent()) {
             throw new UserNotFoundException("User not found");
         }
@@ -83,5 +91,4 @@ public class AdminService {
         Card card = new Card(cardNumber, expirationDate, user, status, balance, RequestBlocking.NO);
         return cardRepository.save(card);
     }
-
 }
