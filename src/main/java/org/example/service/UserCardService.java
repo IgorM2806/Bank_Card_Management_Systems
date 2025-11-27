@@ -18,9 +18,11 @@ import java.util.stream.Collectors;
 public class UserCardService {
 
     private final CardRepository cardRepository;
+    private final BalanceService balanceService;
 
-    public UserCardService(CardRepository cardRepository) {
+    public UserCardService(CardRepository cardRepository,  BalanceService balanceService) {
         this.cardRepository = cardRepository;
+        this.balanceService = balanceService;
     }
 
     public List<CardBalanceDto> viewBalancesForUser (User currentUser) {
@@ -35,29 +37,11 @@ public class UserCardService {
 
     @Transactional
     public BigDecimal depositCardBalance(Long cardId, BigDecimal amountDeposit) {
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new NoSuchElementException("Карточка с указанным ID не найдена."));
-
-        BigDecimal updatedBalance = card.getBalance().add(amountDeposit);
-        card.setBalance(updatedBalance);
-        cardRepository.save(card);
-        return updatedBalance;
+        return balanceService.deposit(cardId, amountDeposit);
     }
 
     @Transactional
     public BigDecimal withdrawCardBalance(Long cardId, BigDecimal amountWithdraw) throws InsufficientFundsException {
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new NoSuchElementException("Карточка с указанным ID не найдена."));
-
-        if (amountWithdraw.compareTo(BigDecimal.ZERO) > 0 &&
-                amountWithdraw.compareTo(card.getBalance()) > 0) {
-            throw new InsufficientFundsException("Недостаточно средств на счету карты №" + card.getCardNumber() +
-                    ". Доступный остаток: " + card.getBalance());
-        }
-
-        BigDecimal updatedBalance = card.getBalance().subtract(amountWithdraw);
-        card.setBalance(updatedBalance);
-        cardRepository.save(card);
-        return updatedBalance;
+        return balanceService.withdraw(cardId, amountWithdraw);
     }
 }

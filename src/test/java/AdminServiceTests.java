@@ -1,5 +1,6 @@
 
 import org.example.Main;
+import org.example.dao.UserDao;
 import org.example.entity.Card;
 import org.example.entity.RoleEnum;
 import org.example.entity.Status;
@@ -7,6 +8,7 @@ import org.example.entity.User;
 import org.example.repository.CardRepository;
 import org.example.repository.UserRepository;
 import org.example.service.AdminService;
+import org.example.service.UserDaoImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,6 +35,9 @@ public class AdminServiceTests {
     @Mock
     private CardRepository cardRepository;
 
+    @Mock
+    private UserDaoImpl userDaoImpl;
+
     @InjectMocks
     private AdminService adminService;
 
@@ -42,9 +47,7 @@ public class AdminServiceTests {
     void testCreateNewUniqueUser_Successful() throws Exception {
         String phoneNumber = "1234567890";
 
-
-        // Настроим ожидаемый сценарий поведения репозитория
-        when(userRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
+        when(userDaoImpl.checkIfUserExistsByPhoneNumber(phoneNumber)).thenReturn(false);
 
         User savedUser = new User("John", "Doe", "Ivanovich",
                 RoleEnum.ROLE_USER, "hashed_password", phoneNumber);
@@ -59,12 +62,8 @@ public class AdminServiceTests {
                 "password",
                 phoneNumber
         );
-
-        // Утверждение результатов
-        verify(userRepository).findByPhoneNumber(phoneNumber);
-        verify(userRepository).save(any(User.class));
-        assertNotNull(newUser);
-        assertEquals(phoneNumber, newUser.getPhoneNumber());
+        assertThat(newUser).isNotNull(); // Пользователь успешно создан
+        assertThat(newUser.getPhoneNumber()).isEqualTo(phoneNumber);
     }
 
     @Test
@@ -77,7 +76,7 @@ public class AdminServiceTests {
         mockUser.setId(validUserId);
         mockUser.setPasswordHash(encoder.encode(oldPassword));
 
-        when(userRepository.findById(validUserId)).thenReturn(Optional.of(mockUser));
+        when(userDaoImpl.findUserById(validUserId)).thenReturn(Optional.of(mockUser));
         when(userRepository.save(mockUser)).thenReturn(mockUser);
 
         User updatedUser = adminService.updateUserPassword(validUserId, newPassword);
@@ -95,7 +94,7 @@ public class AdminServiceTests {
         User mockUser = new User();
         mockUser.setId(validUserId);
 
-        when(userRepository.findById(validUserId)).thenReturn(Optional.of(mockUser));
+        when(userDaoImpl.findUserById(validUserId)).thenReturn(Optional.of(mockUser));
         when(cardRepository.existsByCardNumber(cardNumber)).thenReturn(false);
         when(cardRepository.save(any(Card.class))).thenAnswer(invocation -> invocation.getArgument(0));
         Card createdCard = adminService.createCardForUser(

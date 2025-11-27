@@ -40,6 +40,9 @@ public class Card {
     @Column(nullable = false)
     private RequestBlocking requestBlocking;
 
+    @Column(name = "is_suspicious", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean suspicious;
+
     public Card() {}
 
     public Card(String cardNumber, LocalDate expirationDate, User owner, Status status,
@@ -56,6 +59,10 @@ public class Card {
         this.id = id;
     }
 
+    public boolean isSuspicious() {
+        return suspicious;
+    }
+
     @Override
     public String toString() {
         return "Cards{" +
@@ -66,6 +73,7 @@ public class Card {
                 ", status=" + status +
                 ", balance=" + balance +
                 ", requestBlocking=" + requestBlocking +
-                '}';
+                ", suspicious= "  + suspicious +
+        '}';
     }
 }

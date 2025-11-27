@@ -2,6 +2,7 @@ import org.example.dto.CardBalanceDto;
 import org.example.entity.Card;
 import org.example.entity.User;
 import org.example.repository.CardRepository;
+import org.example.service.BalanceService;
 import org.example.service.UserCardService;
 import org.example.util.MaskCardNumber;
 import org.junit.jupiter.api.Test;
@@ -24,37 +25,51 @@ import static org.mockito.Mockito.when;
 public class UserCardServiceTests {
     @Mock
     private CardRepository cardRepository;
+    @InjectMocks
+    private BalanceService balanceService;
 
     @InjectMocks
     private UserCardService userCardService;
 
     @Test
     public void testDepositCardBalance_successfullyAddAmount() throws Exception{
-        Card mockCard = new Card();
-        mockCard.setId(1L);
-        mockCard.setBalance(new BigDecimal("1000"));
+        Long cardId = 1L;
+        BigDecimal initialBalance = new BigDecimal("1000");
+        BigDecimal depositAmount = new BigDecimal("500");
+        BigDecimal expectedNewBalance = new BigDecimal("1500");
 
-        when(cardRepository.findById(1L)).thenReturn(Optional.of(mockCard));
+        Card mockCard = new Card();
+        mockCard.setId(cardId);
+        mockCard.setBalance(initialBalance);
+
+        when(cardRepository.findById(cardId)).thenReturn(Optional.of(mockCard));
+
         when(cardRepository.save(any(Card.class)))
                 .thenAnswer(invocation -> invocation.getArguments()[0]);
 
-        BigDecimal result = userCardService.depositCardBalance(1L, new BigDecimal("500"));
+        BigDecimal result = balanceService.deposit(cardId, depositAmount);
 
-        assertEquals(new BigDecimal("1500"), result);
+        assertEquals(expectedNewBalance, result);
         verify(cardRepository).save(mockCard);
     }
+
     @Test
     public void testWithdrawCardBalance_successfullySubtractAmount() throws Exception{
-        Card mockCard = new Card();
-        mockCard.setId(1L);
-        mockCard.setBalance(new BigDecimal("1000"));
+        Long cardId = 1L;
+        BigDecimal initialBalance = new BigDecimal("1000");
+        BigDecimal withdrawAmount = new BigDecimal("500");
+        BigDecimal expectedNewBalance = new BigDecimal("500");
 
-        when(cardRepository.findById(1L)).thenReturn(Optional.of(mockCard));
+        Card mockCard = new Card();
+        mockCard.setId(cardId);
+        mockCard.setBalance(initialBalance);
+
+        when(cardRepository.findById(cardId)).thenReturn(Optional.of(mockCard));
         when(cardRepository.save(any(Card.class)))
         .thenAnswer(invocation -> invocation.getArguments()[0]);
 
-        BigDecimal result = userCardService.withdrawCardBalance(1L, new BigDecimal("500"));
-        assertEquals(new BigDecimal("500"), result);
+        BigDecimal result = balanceService.withdraw(cardId, withdrawAmount);
+        assertEquals(expectedNewBalance, result);
         verify(cardRepository).save(mockCard);
     }
 
